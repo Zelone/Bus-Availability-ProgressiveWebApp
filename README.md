@@ -1,0 +1,1 @@
+A Static Progressive Web App, for a bus transport company with a comprehensive search feature and a static database of bus type, routes and timings.
