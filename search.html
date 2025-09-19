@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search - Bus Availability</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <div id="nav-placeholder"></div>
+
+  <main style="padding: 2rem;">
+    <h1 class="mb-4 text-center">Search for Buses</h1>
+    <form id="searchForm" class="row g-3 justify-content-center align-items-end">
+      <div class="col-md-2">
+        <label for="busType" class="form-label">Bus Type</label>
+        <select id="busType" class="form-select">
+          <option value="">All Types</option>
+          <option value="sleeper">Sleeper</option>
+          <option value="AC">AC</option>
+          <option value="sleeper AC">Sleeper AC</option>
+          <option value="seater">Seater</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label for="fromStop" class="form-label">From</label>
+        <input type="text" id="fromStop" class="form-control" placeholder="From">
+      </div>
+      <div class="col-md-2">
+        <label for="toStop" class="form-label">To</label>
+        <input type="text" id="toStop" class="form-control" placeholder="To">
+      </div>
+      <div class="col-md-2">
+        <label for="depTime" class="form-label">Departure Time</label>
+        <input type="time" id="depTime" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <label for="weekday" class="form-label">Weekday</label>
+        <select id="weekday" class="form-select">
+          <option value="">Any Day</option>
+          <option value="MON">Monday</option>
+          <option value="TUE">Tuesday</option>
+          <option value="WED">Wednesday</option>
+          <option value="THU">Thursday</option>
+          <option value="FRI">Friday</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Search</button>
+      </div>
+    </form>
+    <div id="results" class="mt-4"></div>
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
+
+  <script>
+    fetch('nav.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('nav-placeholder').innerHTML = data;
+      });
+    fetch('footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+      });
+
+    let busData = [];
+    fetch('data.json')
+      .then(response => response.json())
+      .then(data => {
+        busData = data;
+      });
+
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const type = document.getElementById('busType').value.trim().toLowerCase();
+      const from = document.getElementById('fromStop').value.trim().toUpperCase();
+      const to = document.getElementById('toStop').value.trim().toUpperCase();
+      const depTime = document.getElementById('depTime').value;
+      const weekday = document.getElementById('weekday').value.trim().toUpperCase();
+
+      const results = busData.filter(bus => {
+        // Type filter
+        if (type && bus.type.toLowerCase() !== type) return false;
+        // Route filter
+        if (from && !bus.route.includes(from)) return false;
+        if (to && !bus.route.includes(to)) return false;
+        if (from && to && bus.route.indexOf(from) >= bus.route.indexOf(to)) return false;
+        // Weekday filter
+        if (weekday && !bus.schedule.some(s => s.day === weekday)) return false;
+        // Departure time filter
+        if (depTime) {
+          const depHour = depTime.slice(0,5);
+          if (!bus.schedule.some(s => (!weekday || s.day === weekday) && (!from || s.stop === from) && s.departure === depHour)) return false;
+        }
+        return true;
+      });
+
+      const resultsDiv = document.getElementById('results');
+      if (results.length === 0) {
+        resultsDiv.innerHTML = '<div class="alert alert-warning">No buses found matching your criteria.</div>';
+        return;
+      }
+      resultsDiv.innerHTML = results.map(bus => {
+        return `<div class='card mb-3 border-primary'>
+          <div class='card-body'>
+            <h5 class='card-title'>Bus ID: ${bus.busId}</h5>
+            <h6 class='card-subtitle mb-2 text-muted'>Type: ${bus.type}</h6>
+            <p class='card-text'><strong>Route:</strong> ${bus.route.join(' → ')}</p>
+            <strong>Schedule:</strong>
+            <ul class='list-group list-group-flush'>${bus.schedule.map(s => `<li class='list-group-item'>${s.day} ${s.stop} dep ${s.departure}</li>`).join('')}</ul>
+          </div>
+        </div>`;
+      }).join('');
+    });
+
+    // Bootstrap JS
+    var script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js";
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>
