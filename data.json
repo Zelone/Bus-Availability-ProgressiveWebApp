@@ -1,7 +1,7 @@
 [
   {
-    "busId": "BUS101",
-    "type": "sleeper",
+    "busId": "BUS201",
+    "types": ["seater", "AC"],
     "route": ["A", "B", "C", "D", "E"],
     "schedule": [
       {"day": "MON", "stop": "A", "departure": "12:00"},
@@ -12,8 +12,8 @@
     ]
   },
   {
-    "busId": "BUS102",
-    "type": "AC",
+    "busId": "BUS202",
+    "types": ["sleeper"],
     "route": ["A", "C", "E"],
     "schedule": [
       {"day": "TUE", "stop": "A", "departure": "10:00"},
@@ -22,8 +22,8 @@
     ]
   },
   {
-    "busId": "BUS103",
-    "type": "sleeper AC",
+    "busId": "BUS203",
+    "types": ["sleeper", "AC"],
     "route": ["B", "D", "E"],
     "schedule": [
       {"day": "WED", "stop": "B", "departure": "09:00"},
@@ -32,8 +32,8 @@
     ]
   },
   {
-    "busId": "BUS104",
-    "type": "seater",
+    "busId": "BUS204",
+    "types": ["seater"],
     "route": ["A", "B", "E"],
     "schedule": [
       {"day": "THU", "stop": "A", "departure": "08:00"},
@@ -42,13 +42,23 @@
     ]
   },
   {
-    "busId": "BUS105",
-    "type": "AC",
+    "busId": "BUS205",
+    "types": ["AC"],
     "route": ["C", "D", "E"],
     "schedule": [
       {"day": "FRI", "stop": "C", "departure": "15:00"},
       {"day": "FRI", "stop": "D", "departure": "17:00"},
       {"day": "FRI", "stop": "E", "departure": "19:00"}
+    ]
+  },
+  {
+    "busId": "BUS206",
+    "types": ["seater", "sleeper", "AC"],
+    "route": ["A", "D", "E"],
+    "schedule": [
+      {"day": "MON", "stop": "A", "departure": "07:00"},
+      {"day": "MON", "stop": "D", "departure": "09:00"},
+      {"day": "MON", "stop": "E", "departure": "11:00"}
     ]
   }
 ]

@@ -14,15 +14,20 @@
   <main style="padding: 2rem;">
     <h1 class="mb-4 text-center">Search for Buses</h1>
     <form id="searchForm" class="row g-3 justify-content-center align-items-end">
-      <div class="col-md-2">
-        <label for="busType" class="form-label">Bus Type</label>
-        <select id="busType" class="form-select">
-          <option value="">All Types</option>
-          <option value="sleeper">Sleeper</option>
-          <option value="AC">AC</option>
-          <option value="sleeper AC">Sleeper AC</option>
-          <option value="seater">Seater</option>
-        </select>
+      <div class="col-md-3">
+        <label class="form-label">Bus Types</label>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="seater" id="typeSeater">
+          <label class="form-check-label" for="typeSeater">Seater</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="sleeper" id="typeSleeper">
+          <label class="form-check-label" for="typeSleeper">Sleeper</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="AC" id="typeAC">
+          <label class="form-check-label" for="typeAC">AC</label>
+        </div>
       </div>
       <div class="col-md-2">
         <label for="fromStop" class="form-label">From</label>
@@ -78,15 +83,20 @@
 
     document.getElementById('searchForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const type = document.getElementById('busType').value.trim().toLowerCase();
+      // Get selected types
+      const selectedTypes = [];
+      if (document.getElementById('typeSeater').checked) selectedTypes.push('seater');
+      if (document.getElementById('typeSleeper').checked) selectedTypes.push('sleeper');
+      if (document.getElementById('typeAC').checked) selectedTypes.push('AC');
+
       const from = document.getElementById('fromStop').value.trim().toUpperCase();
       const to = document.getElementById('toStop').value.trim().toUpperCase();
       const depTime = document.getElementById('depTime').value;
       const weekday = document.getElementById('weekday').value.trim().toUpperCase();
 
       const results = busData.filter(bus => {
-        // Type filter
-        if (type && bus.type.toLowerCase() !== type) return false;
+        // Type filter: must have all selected types
+        if (selectedTypes.length > 0 && !selectedTypes.every(t => bus.types.includes(t))) return false;
         // Route filter
         if (from && !bus.route.includes(from)) return false;
         if (to && !bus.route.includes(to)) return false;
@@ -110,7 +120,7 @@
         return `<div class='card mb-3 border-primary'>
           <div class='card-body'>
             <h5 class='card-title'>Bus ID: ${bus.busId}</h5>
-            <h6 class='card-subtitle mb-2 text-muted'>Type: ${bus.type}</h6>
+            <h6 class='card-subtitle mb-2 text-muted'>Types: ${bus.types.join(', ')}</h6>
             <p class='card-text'><strong>Route:</strong> ${bus.route.join(' → ')}</p>
             <strong>Schedule:</strong>
             <ul class='list-group list-group-flush'>${bus.schedule.map(s => `<li class='list-group-item'>${s.day} ${s.stop} dep ${s.departure}</li>`).join('')}</ul>
